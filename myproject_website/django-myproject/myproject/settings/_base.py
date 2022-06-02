@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 import os
 import sys
+import json
+from django.core.exceptions import ImproperlyConfigured
+from myproject.apps.core.versioning import get_git_changeset_timestamp
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # BASE_DIR = Path(__file__).resolve().parent.parent
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -47,7 +51,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 
 #to fetch secret data from json file
-import json
+
 
 with open(os.path.dirname(__file__), 'secret.json', 'r') as f:
     secrets = json.loads(f.read())
@@ -177,7 +181,17 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'myproject', 'site_static'),]
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-STATIC_URL = '/static/'
+
+
+#adding timestamp from core.versioning file
+
+# We pass BASE_DIR to the function, as we are sure that it is under version control.......
+#  The timestamp is parsed, converted to a string consisting of the......
+#   year, month, day, hour, minutes, and seconds returned, and is then included in the definition of the STATIC_URL.
+timestamp = get_git_changeset_timestamp(BASE_DIR)
+# STATIC_URL = '/static/'
+STATIC_URL = f'/static/{timestamp}/'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
