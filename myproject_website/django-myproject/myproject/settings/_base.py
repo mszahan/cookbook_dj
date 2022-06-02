@@ -12,17 +12,66 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
-
+import sys
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # BASE_DIR = Path(__file__).resolve().parent.parent
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+# base for the external apps that are handled differently
+EXTERNAL_BASE = os.path.join(BASE_DIR, 'externals')
+EXTERNAL_LIBS_PATH = os.path.join(EXTERNAL_BASE, 'libs')
+EXTERNAL_APPS_PATH = os.path.join(EXTERNAL_BASE, 'apps')
+
+# One of the ways to put a module under the Python path is to modify 
+# the sys.path variable before importing a module that is in an unusual location
+# the empty strign is to find the current directory of any module before fidning any other path
+sys.path = ['', EXTERNAL_LIBS_PATH, EXTERNAL_APPS_PATH] + sys.path
+
+
+
+
+# this cunks of code is for the environment variable to handle secret keys and sensitive data
+from django.core.exceptions import ImproperlyConfigured
+
+# to get data from the environemnt variable
+
+# def get_secret(setting):
+#     """Get the secret variable or return explicit exception."""
+#     try:
+#         return os.environ[setting]
+#     except KeyError:
+#         error_msg = f'Set the {setting} environment variable'
+#         raise ImproperlyConfigured(error_msg)
+
+
+
+#to fetch secret data from json file
+import json
+
+with open(os.path.dirname(__file__), 'secret.json', 'r') as f:
+    secrets = json.loads(f.read())
+
+def get_secret(setting):
+    """Get the secret variable or return explicit exception."""
+    try:
+        return secrets[setting]
+    except KeyError:
+        error_msg = f"SEt the {setting} secret variable"
+        raise ImproperlyConfigured(error_msg)
+
+
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
+
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-noq^+c7u453mhw%z1+16ji&_pxikln@mv0hu9&@gp%9_g%276s'
+# SECRET_KEY = 'django-insecure-noq^+c7u453mhw%z1+16ji&_pxikln@mv0hu9&@gp%9_g%276s'
+SECRET_KEY = get_secret('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -77,8 +126,12 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': get_secret('DATABASE_NAME'),
+        'USER': get_secret('DATABASE_USER'),
+        'PASSWORD': get_secret('DATABASE_PASSWORD'),
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
 
