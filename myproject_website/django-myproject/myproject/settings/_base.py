@@ -16,6 +16,7 @@ import sys
 import json
 from django.core.exceptions import ImproperlyConfigured
 from myproject.apps.core.versioning import get_git_changeset_timestamp
+from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # BASE_DIR = Path(__file__).resolve().parent.parent
@@ -197,3 +198,19 @@ STATIC_URL = f'/static/{timestamp}/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+#If you want to overwrite the ARTICLE_THEME_CHOICES settings....
+#  for a given project, you should add MAGAZINE_ARTICLE_THEME_CHOICES...
+#  in the project settings:
+
+MAGAZINE_ARTICLE_THEME_CHOICES = [ 
+    ('futurism', _("Futurism")), 
+    ('nostalgia', _("Nostalgia")), 
+    ('sustainability', _("Sustainability")),
+    ('wonder', _("Wonder")), 
+    ('positivity', _("Positivity")), 
+    ('solutions', _("Solutions")), 
+    ('science', _("Science")),
+]
