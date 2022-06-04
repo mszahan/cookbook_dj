@@ -11,7 +11,7 @@ from myproject.apps.core.models import (
 )
 
 
-class Ideas(CreationModificationDateBase, MetaTagsBase, UrlBase):
+class Idea(CreationModificationDateBase, MetaTagsBase, UrlBase):
     title = models.CharField(_('Title'), max_length=200,)
     content = models.TextField(_('Content'),)
 
